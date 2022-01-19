@@ -19,7 +19,7 @@ struct Car {
 Make: \(self.make)
 Model: \(self.model)
 Top Speed: \(self.topSpeed)mph
-Acceleration(0-60): \(self.acceleration)s
+Acceleration(0-60 in): \(self.acceleration)s
 Handling: \(self.handling)
 """
         
