@@ -20,6 +20,23 @@ struct ContentView: View {
     @State private var tiresPackage = false
     @State private var spoilerPackage = false
     @State private var steeringWheelPackage = false
+    @State private var remainingFunds = 1000
+    
+    var exhaustPackageEnabled: Bool {
+        return exhaustPackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var tiresPackageEnabled: Bool {
+        return tiresPackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var spoilerPackageEnabled: Bool {
+        return spoilerPackage ? true : remainingFunds >= 500 ? true : false
+    }
+    
+    var steeringWheelPackageEnabled: Bool {
+        return steeringWheelPackage ? true : remainingFunds >= 250 ? true : false
+    }
     
     var body: some View {
         let exhaustPackageBinding = Binding<Bool> (
@@ -28,8 +45,10 @@ struct ContentView: View {
                 self.exhaustPackage = newValue
                 if newValue == true {
                     starterCars.cars[selectedCar].topSpeed += 5
+                    remainingFunds -= 500
                 } else {
                     starterCars.cars[selectedCar].topSpeed -= 5
+                    remainingFunds += 500
                 }
             }
         )
@@ -40,8 +59,10 @@ struct ContentView: View {
                 self.tiresPackage = newValue
                 if newValue == true {
                     starterCars.cars[selectedCar].handling += 2
+                    remainingFunds -= 500
                 } else {
                     starterCars.cars[selectedCar].handling -= 2
+                    remainingFunds += 500
                 }
             }
         )
@@ -52,8 +73,10 @@ struct ContentView: View {
                 self.spoilerPackage = newValue
                 if newValue == true {
                     starterCars.cars[selectedCar].acceleration -= 1
+                    remainingFunds -= 500
                 } else {
                     starterCars.cars[selectedCar].acceleration += 1
+                    remainingFunds += 500
                 }
             }
         )
@@ -64,8 +87,10 @@ struct ContentView: View {
                 self.steeringWheelPackage = newValue
                 if newValue == true {
                     starterCars.cars[selectedCar].handling += 3
+                    remainingFunds -= 250
                 } else {
                     starterCars.cars[selectedCar].handling -= 3
+                    remainingFunds += 250
                 }
             }
         )
@@ -78,17 +103,19 @@ struct ContentView: View {
                     tiresPackage = false
                     spoilerPackage = false
                     steeringWheelPackage = false
+                    remainingFunds = 1000
                     
                     selectedCar += 1
                 })
             }
             Section{
-                Toggle("Exhaust Package", isOn: exhaustPackageBinding)
-                Toggle("Tires Package", isOn: tiresPackageBinding)
-                Toggle("Spoiler Package", isOn: spoilerPackageBinding)
-                Toggle("Steering Wheel Package", isOn: steeringWheelPackageBinding)
+                Toggle("Exhaust Package (Cost: 500)", isOn: exhaustPackageBinding).disabled(!exhaustPackageEnabled)
+                Toggle("Tires Package (Cost: 500)", isOn: tiresPackageBinding).disabled(!tiresPackageEnabled)
+                Toggle("Spoiler Package (Cost: 500)", isOn: spoilerPackageBinding).disabled(!spoilerPackageEnabled)
+                Toggle("Steering Wheel Package (Cost: 250)", isOn: steeringWheelPackageBinding).disabled(!steeringWheelPackageEnabled)
             }
         }
+        Text("Remaining Funds: \(remainingFunds)")
     }
 }
 
