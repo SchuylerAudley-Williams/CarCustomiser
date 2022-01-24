@@ -21,6 +21,8 @@ struct ContentView: View {
     @State private var spoilerPackage = false
     @State private var steeringWheelPackage = false
     @State private var remainingFunds = 1000
+    @State private var remainingTime = 30
+    @State private var timeUp = false
     
     var exhaustPackageEnabled: Bool {
         return exhaustPackage ? true : remainingFunds >= 500 ? true : false
@@ -38,7 +40,10 @@ struct ContentView: View {
         return steeringWheelPackage ? true : remainingFunds >= 250 ? true : false
     }
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
     var body: some View {
+        
         let exhaustPackageBinding = Binding<Bool> (
             get : { self.exhaustPackage },
             set : { newValue in
@@ -94,7 +99,14 @@ struct ContentView: View {
                 }
             }
         )
-        
+        Text("\(remainingTime)")
+            .onReceive(timer) { _ in
+                if self.remainingTime > 0 {
+                    self.remainingTime -= 1
+                } else {
+                    timeUp = true
+                }
+            }
         Form{
             VStack(alignment: .leading, spacing: 20){
                 Text(starterCars.cars[selectedCar].displayStats())
@@ -106,13 +118,13 @@ struct ContentView: View {
                     remainingFunds = 1000
                     
                     selectedCar += 1
-                })
+                }).disabled(timeUp)
             }
             Section{
-                Toggle("Exhaust Package (Cost: 500)", isOn: exhaustPackageBinding).disabled(!exhaustPackageEnabled)
-                Toggle("Tires Package (Cost: 500)", isOn: tiresPackageBinding).disabled(!tiresPackageEnabled)
-                Toggle("Spoiler Package (Cost: 500)", isOn: spoilerPackageBinding).disabled(!spoilerPackageEnabled)
-                Toggle("Steering Wheel Package (Cost: 250)", isOn: steeringWheelPackageBinding).disabled(!steeringWheelPackageEnabled)
+                Toggle("Exhaust Package (Cost: 500)", isOn: exhaustPackageBinding).disabled(!exhaustPackageEnabled).disabled(timeUp)
+                Toggle("Tires Package (Cost: 500)", isOn: tiresPackageBinding).disabled(!tiresPackageEnabled).disabled(timeUp)
+                Toggle("Spoiler Package (Cost: 500)", isOn: spoilerPackageBinding).disabled(!spoilerPackageEnabled).disabled(timeUp)
+                Toggle("Steering Wheel Package (Cost: 250)", isOn: steeringWheelPackageBinding).disabled(!steeringWheelPackageEnabled).disabled(timeUp)
             }
         }
         Text("Remaining Funds: \(remainingFunds)")

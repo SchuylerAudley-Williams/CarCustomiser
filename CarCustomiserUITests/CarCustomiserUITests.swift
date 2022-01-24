@@ -28,7 +28,6 @@ class CarCustomiserUITests: XCTestCase {
         app.launch()
         
         //act
-        
                 
         
         //assert
